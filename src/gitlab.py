@@ -80,7 +80,7 @@ def main(wf):
 
     # Start update script if cached data is too old (or doesn't exist)
     if not wf.cached_data_fresh('projects', max_age=3600) and not is_running('update'):
-        cmd = ['/usr/bin/python', wf.workflowfile('update.py')]
+        cmd = ['/usr/bin/python3', wf.workflowfile('update.py')]
         run_in_background('update', cmd)
         wf.rerun = 0.5
 
