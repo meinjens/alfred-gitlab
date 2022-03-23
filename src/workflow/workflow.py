@@ -885,7 +885,7 @@ class LockFile(object):
         except ValueError:
             return self.release()
 
-        from background import _process_exists
+        from workflow.background import _process_exists
         if not _process_exists(pid):
             self.release()
 
@@ -1372,7 +1372,7 @@ class Workflow(object):
                 version = self.info.get('version')
 
             if version:
-                from update import Version
+                from workflow.update import Version
                 version = Version(version)
 
             self._version = version
@@ -2510,7 +2510,7 @@ class Workflow(object):
             # version = self._update_settings['version']
             version = str(self.version)
 
-            from background import run_in_background
+            from workflow.background import run_in_background
 
             # update.py is adjacent to this file
             update_script = os.path.join(os.path.dirname(__file__),
@@ -2550,7 +2550,7 @@ class Workflow(object):
         if not update.check_update(github_slug, version, self.prereleases):
             return False
 
-        from background import run_in_background
+        from workflow.background import run_in_background
 
         # update.py is adjacent to this file
         update_script = os.path.join(os.path.dirname(__file__),

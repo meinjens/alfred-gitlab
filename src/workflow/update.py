@@ -29,7 +29,7 @@ import re
 import subprocess
 
 import workflow
-import web
+import workflow.web
 
 # __all__ = []
 
@@ -211,7 +211,7 @@ def download_workflow(url):
     wf().logger.debug(
         'downloading updated workflow from `%s` to `%s` ...', url, local_path)
 
-    response = web.get(url)
+    response = workflow.web.get(url)
 
     with open(local_path, 'wb') as output:
         output.write(response.content)
@@ -310,7 +310,7 @@ def get_valid_releases(github_slug, prereleases=False):
     def retrieve_releases():
         wf().logger.info(
             'retrieving releases: %s', github_slug)
-        return web.get(api_url).json()
+        return workflow.web.get(api_url).json()
 
     slug = github_slug.replace('/', '-')
     for release in wf().cached_data('gh-releases-' + slug, retrieve_releases):
