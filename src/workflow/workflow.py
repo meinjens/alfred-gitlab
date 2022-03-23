@@ -24,7 +24,6 @@ from __future__ import print_function, unicode_literals
 import atexit
 import binascii
 from contextlib import contextmanager
-import cPickle
 from copy import deepcopy
 import errno
 import json
@@ -644,7 +643,7 @@ class CPickleSerializer(object):
         :rtype: object
 
         """
-        return cPickle.load(file_obj)
+        return pickle.load(file_obj)
 
     @classmethod
     def dump(cls, obj, file_obj):
@@ -658,7 +657,7 @@ class CPickleSerializer(object):
         :type file_obj: ``file`` object
 
         """
-        return cPickle.dump(obj, file_obj, protocol=-1)
+        return pickle.dump(obj, file_obj, protocol=-1)
 
 
 class PickleSerializer(object):
@@ -1150,8 +1149,8 @@ class Workflow(object):
         self._bundleid = None
         self._debugging = None
         self._name = None
-        self._cache_serializer = 'cpickle'
-        self._data_serializer = 'cpickle'
+        self._cache_serializer = 'pickle'
+        self._data_serializer = 'pickle'
         self._info = None
         self._info_loaded = False
         self._logger = None
@@ -1297,7 +1296,7 @@ class Workflow(object):
             if self.alfred_env.get('workflow_bundleid'):
                 self._bundleid = self.alfred_env.get('workflow_bundleid')
             else:
-                self._bundleid = unicode(self.info['bundleid'], 'utf-8')
+                self._bundleid = str(self.info['bundleid'], 'utf-8')
 
         return self._bundleid
 
@@ -2269,7 +2268,7 @@ class Workflow(object):
 
             if not sys.stdout.isatty():  # Show error in Alfred
                 if text_errors:
-                    print(unicode(err).encode('utf-8'), end='')
+                    print(str(err).encode('utf-8'), end='')
                 else:
                     self._items = []
                     if self._name:
@@ -2279,7 +2278,7 @@ class Workflow(object):
                     else:  # pragma: no cover
                         name = os.path.dirname(__file__)
                     self.add_item("Error in workflow '%s'" % name,
-                                  unicode(err),
+                                  str(err),
                                   icon=ICON_ERROR)
                     self.send_feedback()
             return 1
@@ -2431,7 +2430,7 @@ class Workflow(object):
 
             version = self.version
 
-        if isinstance(version, basestring):
+        if isinstance(version, str):
             from update import Version
             version = Version(version)
 
@@ -2517,7 +2516,7 @@ class Workflow(object):
             update_script = os.path.join(os.path.dirname(__file__),
                                          b'update.py')
 
-            cmd = ['/usr/bin/python', update_script, 'check', github_slug,
+            cmd = ['/usr/bin/python3', update_script, 'check', github_slug,
                    version]
 
             if self.prereleases:
@@ -2557,7 +2556,7 @@ class Workflow(object):
         update_script = os.path.join(os.path.dirname(__file__),
                                      b'update.py')
 
-        cmd = ['/usr/bin/python', update_script, 'install', github_slug,
+        cmd = ['/usr/bin/python3', update_script, 'install', github_slug,
                version]
 
         if self.prereleases:
@@ -2645,7 +2644,7 @@ class Workflow(object):
             h = groups.get('hex')
             password = groups.get('pw')
             if h:
-                password = unicode(binascii.unhexlify(h), 'utf-8')
+                password = str(binascii.unhexlify(h), 'utf-8')
 
         self.logger.debug('got password : %s:%s', service, account)
 
@@ -2887,8 +2886,8 @@ class Workflow(object):
         """
         encoding = encoding or self._input_encoding
         normalization = normalization or self._normalizsation
-        if not isinstance(text, unicode):
-            text = unicode(text, encoding)
+        if not isinstance(text, str):
+            text = str(text, encoding)
         return unicodedata.normalize(normalization, text)
 
     def fold_to_ascii(self, text):
@@ -2907,7 +2906,7 @@ class Workflow(object):
         if isascii(text):
             return text
         text = ''.join([ASCII_REPLACEMENTS.get(c, c) for c in text])
-        return unicode(unicodedata.normalize('NFKD',
+        return str(unicodedata.normalize('NFKD',
                        text).encode('ascii', 'ignore'))
 
     def dumbify_punctuation(self, text):

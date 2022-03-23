@@ -19,8 +19,8 @@ import socket
 import string
 import unicodedata
 import urllib
-import urllib2
-import urlparse
+import urllib.request
+import urllib.parse
 import zlib
 
 
@@ -88,15 +88,15 @@ def str_dict(dic):
     else:
         dic2 = {}
     for k, v in dic.items():
-        if isinstance(k, unicode):
+        if isinstance(k, str):
             k = k.encode('utf-8')
-        if isinstance(v, unicode):
+        if isinstance(v, str):
             v = v.encode('utf-8')
         dic2[k] = v
     return dic2
 
 
-class NoRedirectHandler(urllib2.HTTPRedirectHandler):
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     """Prevent redirections."""
 
     def redirect_request(self, *args):
@@ -189,9 +189,9 @@ class Response(object):
     """
 
     def __init__(self, request, stream=False):
-        """Call `request` with :mod:`urllib2` and process results.
+        """Call `request` with :mod:`urllib` and process results.
 
-        :param request: :class:`urllib2.Request` instance
+        :param request: :class:`urllib.request.Request` instance
         :param stream: Whether to stream response or retrieve it all at once
         :type stream: bool
 
@@ -211,8 +211,8 @@ class Response(object):
 
         # Execute query
         try:
-            self.raw = urllib2.urlopen(request)
-        except urllib2.HTTPError as err:
+            self.raw = urllib.request.urlopen(request)
+        except urllib.request.HTTPError as err:
             self.error = err
             try:
                 self.url = err.geturl()
@@ -317,7 +317,7 @@ class Response(object):
 
         """
         if self.encoding:
-            return unicodedata.normalize('NFC', unicode(self.content,
+            return unicodedata.normalize('NFC', str(self.content,
                                                         self.encoding))
         return self.content
 
@@ -399,7 +399,7 @@ class Response(object):
     def raise_for_status(self):
         """Raise stored error if one occurred.
 
-        error will be instance of :class:`urllib2.HTTPError`
+        error will be instance of :class:`urllib.request.HTTPError`
         """
         if self.error is not None:
             raise self.error
@@ -511,14 +511,14 @@ def request(method, url, params=None, data=None, headers=None, cookies=None,
 
     if auth is not None:  # Add authorisation handler
         username, password = auth
-        password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
         password_manager.add_password(None, url, username, password)
-        auth_manager = urllib2.HTTPBasicAuthHandler(password_manager)
+        auth_manager = urllib.request.HTTPBasicAuthHandler(password_manager)
         openers.append(auth_manager)
 
     # Install our custom chain of openers
-    opener = urllib2.build_opener(*openers)
-    urllib2.install_opener(opener)
+    opener = urllib.request.build_opener(*openers)
+    urllib.request.install_opener(opener)
 
     if not headers:
         headers = CaseInsensitiveDictionary()
@@ -551,23 +551,23 @@ def request(method, url, params=None, data=None, headers=None, cookies=None,
     # Make sure everything is encoded text
     headers = str_dict(headers)
 
-    if isinstance(url, unicode):
+    if isinstance(url, str):
         url = url.encode('utf-8')
 
     if params:  # GET args (POST args are handled in encode_multipart_formdata)
 
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
 
         if query:  # Combine query string and `params`
-            url_params = urlparse.parse_qs(query)
+            url_params = urllib.parse.parse_qs(query)
             # `params` take precedence over URL query string
             url_params.update(params)
             params = url_params
 
         query = urllib.urlencode(str_dict(params), doseq=True)
-        url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+        url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
 
-    req = urllib2.Request(url, data, headers)
+    req = urllib.request.Request(url, data, headers)
     return Response(req, stream)
 
 
@@ -638,9 +638,9 @@ def encode_multipart_formdata(fields, files):
 
     # Normal form fields
     for (name, value) in fields.items():
-        if isinstance(name, unicode):
+        if isinstance(name, str):
             name = name.encode('utf-8')
-        if isinstance(value, unicode):
+        if isinstance(value, str):
             value = value.encode('utf-8')
         output.append('--' + boundary)
         output.append('Content-Disposition: form-data; name="%s"' % name)
@@ -655,11 +655,11 @@ def encode_multipart_formdata(fields, files):
             mimetype = d[u'mimetype']
         else:
             mimetype = get_content_type(filename)
-        if isinstance(name, unicode):
+        if isinstance(name, str):
             name = name.encode('utf-8')
-        if isinstance(filename, unicode):
+        if isinstance(filename, str):
             filename = filename.encode('utf-8')
-        if isinstance(mimetype, unicode):
+        if isinstance(mimetype, str):
             mimetype = mimetype.encode('utf-8')
         output.append('--' + boundary)
         output.append('Content-Disposition: form-data; '
