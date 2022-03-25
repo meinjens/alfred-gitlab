@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-from __future__ import absolute_import
 from workflow import web, Workflow, PasswordNotFound
 
 def get_projects(api_key, url):
@@ -48,7 +47,7 @@ def main(wf):
         # Nothing we can do about this, so just log it
         wf.logger.error('No API key saved')
 
-if __name__ == u"__main__":
+if __name__ == "__main__":
     wf = Workflow()
     log = wf.logger
     wf.run(main)
