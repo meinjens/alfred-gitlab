@@ -9,6 +9,7 @@
 
 """Lightweight HTTP library with a requests-like interface."""
 
+from __future__ import absolute_import
 import codecs
 import json
 import mimetypes
@@ -18,10 +19,12 @@ import re
 import socket
 import string
 import unicodedata
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import urllib.request
 import urllib.parse
 import zlib
+import six
+from six.moves import range
 
 
 USER_AGENT = u'Alfred-Workflow/1.19 (+http://www.deanishe.net/alfred-workflow)'
@@ -119,7 +122,7 @@ class CaseInsensitiveDictionary(dict):
     def __init__(self, initval=None):
         """Create new case-insensitive dictionary."""
         if isinstance(initval, dict):
-            for key, value in initval.iteritems():
+            for key, value in six.iteritems(initval):
                 self.__setitem__(key, value)
 
         elif isinstance(initval, list):
@@ -546,7 +549,7 @@ def request(method, url, params=None, data=None, headers=None, cookies=None,
         new_headers, data = encode_multipart_formdata(data, files)
         headers.update(new_headers)
     elif data and isinstance(data, dict):
-        data = urllib.urlencode(str_dict(data))
+        data = six.moves.urllib.parse.urlencode(str_dict(data))
 
     # Make sure everything is encoded text
     headers = str_dict(headers)
@@ -564,7 +567,7 @@ def request(method, url, params=None, data=None, headers=None, cookies=None,
             url_params.update(params)
             params = url_params
 
-        query = urllib.urlencode(str_dict(params), doseq=True)
+        query = six.moves.urllib.parse.urlencode(str_dict(params), doseq=True)
         url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
 
     req = urllib.request.Request(url, data, headers)

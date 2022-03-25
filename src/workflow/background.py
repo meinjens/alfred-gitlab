@@ -19,12 +19,13 @@ and examples.
 
 from __future__ import print_function, unicode_literals
 
+from __future__ import absolute_import
 import sys
 import os
 import subprocess
 import pickle
 
-from workflow import Workflow
+from .workflow import Workflow
 
 __all__ = ['is_running', 'run_in_background']
 

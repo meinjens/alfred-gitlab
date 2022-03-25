@@ -23,13 +23,14 @@
 
 from __future__ import print_function, unicode_literals
 
+from __future__ import absolute_import
 import os
 import tempfile
 import re
 import subprocess
 
-import workflow
-import workflow.web
+from . import workflow
+from . import web
 
 # __all__ = []
 

@@ -30,6 +30,7 @@ import os
 import sys
 
 from .workflow import Workflow
+import six
 
 
 class Variables(dict):
@@ -106,7 +107,7 @@ class Variables(dict):
             str: UTF-8 encoded ``alfredworkflow`` JSON object
 
         """
-        return unicode(self).encode('utf-8')
+        return six.text_type(self).encode('utf-8')
 
 
 class Modifier(object):

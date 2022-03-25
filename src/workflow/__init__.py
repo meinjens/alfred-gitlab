@@ -10,6 +10,7 @@
 
 """A helper library for `Alfred <http://www.alfredapp.com/>`_ workflows."""
 
+from __future__ import absolute_import
 import os
 
 # Workflow objects

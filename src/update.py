@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from __future__ import absolute_import
 from workflow import web, Workflow, PasswordNotFound
 
 def get_projects(api_key, url):

@@ -21,6 +21,7 @@ up your Python script to best utilise the :class:`Workflow` object.
 
 from __future__ import print_function, unicode_literals
 
+from __future__ import absolute_import
 import atexit
 import binascii
 from contextlib import contextmanager
@@ -885,7 +886,7 @@ class LockFile(object):
         except ValueError:
             return self.release()
 
-        from workflow.background import _process_exists
+        from .workflow.background import _process_exists
         if not _process_exists(pid):
             self.release()
 
@@ -1191,7 +1192,7 @@ class Workflow(object):
     @property
     def alfred_version(self):
         """Alfred version as :class:`~workflow.update.Version` object."""
-        from update import Version
+        from .update import Version
         return Version(self.alfred_env.get('version'))
 
     @property
@@ -1372,7 +1373,7 @@ class Workflow(object):
                 version = self.info.get('version')
 
             if version:
-                from workflow.update import Version
+                from .update import Version
                 version = Version(version)
 
             self._version = version
@@ -2402,7 +2403,7 @@ class Workflow(object):
 
             version = self.settings.get('__workflow_last_version')
             if version:
-                from update import Version
+                from .update import Version
                 version = Version(version)
 
             self._last_version_run = version
@@ -2431,7 +2432,7 @@ class Workflow(object):
             version = self.version
 
         if isinstance(version, str):
-            from update import Version
+            from .update import Version
             version = Version(version)
 
         self.settings['__workflow_last_version'] = str(version)
@@ -2510,7 +2511,7 @@ class Workflow(object):
             # version = self._update_settings['version']
             version = str(self.version)
 
-            from workflow.background import run_in_background
+            from .background import run_in_background
 
             # update.py is adjacent to this file
             update_script = os.path.join(os.path.dirname(__file__),
@@ -2541,7 +2542,7 @@ class Workflow(object):
             installed, else ``False``
 
         """
-        import update
+        from . import update
 
         github_slug = self._update_settings['github_slug']
         # version = self._update_settings['version']
@@ -2550,7 +2551,7 @@ class Workflow(object):
         if not update.check_update(github_slug, version, self.prereleases):
             return False
 
-        from workflow.background import run_in_background
+        from .workflow.background import run_in_background
 
         # update.py is adjacent to this file
         update_script = os.path.join(os.path.dirname(__file__),

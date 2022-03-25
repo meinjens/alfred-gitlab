@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import absolute_import
 import sys
 import argparse
 from workflow import Workflow3, ICON_WEB, ICON_WARNING, ICON_INFO, web, PasswordNotFound
