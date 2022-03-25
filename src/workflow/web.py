@@ -148,7 +148,7 @@ class CaseInsensitiveDictionary(dict):
             self[k] = v
 
     def items(self):
-        return [(v['key'], v['val']) for v in dict.itervalues(self)]
+        return [(v['key'], v['val']) for v in iter(dict.values(self))]
 
     def keys(self):
         return [v['key'] for v in dict.itervalues(self)]
@@ -231,8 +231,8 @@ class Response(object):
         # Parse additional info if request succeeded
         if not self.error:
             headers = self.raw.info()
-            self.transfer_encoding = headers.getencoding()
-            self.mimetype = headers.gettype()
+            self.transfer_encoding = headers.get('transfer-encoding', '')
+            self.mimetype = headers.get('content-type', '')
             for key in headers.keys():
                 self.headers[key.lower()] = headers.get(key)
 
@@ -268,7 +268,7 @@ class Response(object):
         :rtype: list, dict or unicode
 
         """
-        return json.loads(self.content, self.encoding or 'utf-8')
+        return json.loads(self.content)
 
     @property
     def encoding(self):
@@ -415,11 +415,11 @@ class Response(object):
         headers = self.raw.info()
         encoding = None
 
-        if headers.getparam('charset'):
-            encoding = headers.getparam('charset')
+        if headers.get('charset'):
+            encoding = headers.get('charset')
 
         # HTTP Content-Type header
-        for param in headers.getplist():
+        for param in headers.get('content-type'):
             if param.startswith('charset='):
                 encoding = param[8:]
                 break
@@ -564,8 +564,8 @@ def request(method, url, params=None, data=None, headers=None, cookies=None,
             url_params.update(params)
             params = url_params
 
-        query = urllib.parse.urlencode(str_dict(params), doseq=True)
-        url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
+        query = urllib.parse.urlencode(str_dict(params), doseq=True).encode('utf-8')
+        url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment)).decode('utf-8')
 
     req = urllib.request.Request(url, data, headers)
     return Response(req, stream)

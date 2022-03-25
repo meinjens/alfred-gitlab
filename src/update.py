@@ -50,4 +50,5 @@ def main(wf):
 if __name__ == "__main__":
     wf = Workflow()
     log = wf.logger
+    log.info("START")
     wf.run(main)
